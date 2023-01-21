@@ -1,0 +1,11 @@
+body {
+    background-image: url('bgb.jpg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+#logo {
+    height: 130px;
+    width: 130px;
+}
+
