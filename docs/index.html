@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CCML – Centre Culturel Musulman de Longueuil</title>
+  <meta name="description" content="Centre Culturel Musulman de Longueuil – Horaires des prières, activités, services communautaires." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ===== HEADER / NAV ===== -->
+  <header class="header" id="header">
+    <div class="container header__inner">
+      <a href="#" class="logo">
+        <div class="logo__icon">
+          <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="30" cy="30" r="28" stroke="currentColor" stroke-width="2"/>
+            <path d="M30 8 C20 8 12 16 12 26 C12 34 18 40 26 43 L26 48 L34 48 L34 43 C42 40 48 34 48 26 C48 16 40 8 30 8Z" fill="currentColor" opacity="0.15"/>
+            <path d="M30 12 C22 12 16 18 16 26 C16 32 20 37 26 40 L26 44 L30 46 L34 44 L34 40 C40 37 44 32 44 26 C44 18 38 12 30 12Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+            <line x1="30" y1="6" x2="30" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="30" cy="5" r="2" fill="currentColor"/>
+            <line x1="22" y1="46" x2="38" y2="46" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <line x1="20" y1="50" x2="40" y2="50" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="logo__text">
+          <span class="logo__title">CCML</span>
+          <span class="logo__subtitle">Centre Culturel Musulman de Longueuil</span>
+        </div>
+      </a>
+
+      <nav class="nav" id="nav">
+        <a href="#prayer-times" class="nav__link active">Prières</a>
+        <a href="#about" class="nav__link">À propos</a>
+        <a href="#programs" class="nav__link">Programmes</a>
+        <a href="#calendar" class="nav__link">Calendrier</a>
+        <a href="#contact" class="nav__link">Contact</a>
+      </nav>
+
+      <div class="header__actions">
+        <button class="btn btn--donate" onclick="window.location='#donate'">Faire un don</button>
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== HERO / PRAYER TIMES ===== -->
+  <section class="hero" id="prayer-times">
+    <div class="hero__bg">
+      <div class="hero__pattern"></div>
+    </div>
+    <div class="container">
+      <div class="hero__top">
+        <div class="hero__date-block">
+          <p class="hero__hijri" id="hijriDate">Chargement…</p>
+          <h1 class="hero__title">Horaires des Prières</h1>
+          <p class="hero__gregorian" id="gregorianDate"></p>
+          <p class="hero__location">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+            Longueuil, Québec
+          </p>
+        </div>
+        <div class="next-prayer-card" id="nextPrayerCard">
+          <p class="next-prayer-card__label">Prochaine prière</p>
+          <p class="next-prayer-card__name" id="nextPrayerName">–</p>
+          <p class="next-prayer-card__time" id="nextPrayerTime">–</p>
+          <div class="countdown" id="countdown">–</div>
+        </div>
+      </div>
+
+      <!-- Prayer Cards -->
+      <div class="prayers-grid" id="prayersGrid">
+        <!-- Filled by JS -->
+      </div>
+
+      <!-- Jumu'ah Banner -->
+      <div class="jumuah-banner">
+        <div class="jumuah-banner__icon">🕌</div>
+        <div>
+          <strong>Prière du Vendredi (Jumu'ah)</strong>
+          <span>Premier khutbah : 13h00 — Deuxième khutbah : 13h30 — Iqama : 13h40</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== MONTHLY CALENDAR ===== -->
+  <section class="section section--alt" id="calendar">
+    <div class="container">
+      <div class="section__header">
+        <h2 class="section__title">Calendrier mensuel des prières</h2>
+        <p class="section__subtitle">Tous les horaires pour le mois en cours à Longueuil</p>
+      </div>
+      <div class="calendar-controls">
+        <button class="btn btn--outline" id="prevMonth">&#8249; Mois précédent</button>
+        <h3 class="calendar-month-title" id="calendarMonthTitle">–</h3>
+        <button class="btn btn--outline" id="nextMonth">Mois suivant &#8250;</button>
+      </div>
+      <div class="table-wrapper">
+        <table class="prayer-table" id="prayerTable">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Jour</th>
+              <th>Fajr</th>
+              <th>Lever</th>
+              <th>Dhuhr</th>
+              <th>Asr</th>
+              <th>Maghrib</th>
+              <th>Isha</th>
+            </tr>
+          </thead>
+          <tbody id="prayerTableBody">
+            <tr><td colspan="8" class="loading-cell"><div class="spinner"></div> Chargement des horaires…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ABOUT ===== -->
+  <section class="section" id="about">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-text">
+          <span class="section__tag">À propos</span>
+          <h2 class="section__title">Bienvenue au CCML</h2>
+          <p>Le <strong>Centre Culturel Musulman de Longueuil (CCML)</strong> est une institution communautaire au service des musulmans de la Rive-Sud de Montréal depuis de nombreuses années.</p>
+          <p>Nous offrons un lieu de prière, d'apprentissage et de rassemblement pour toute la famille musulmane de notre communauté. Notre mission est de promouvoir l'éducation islamique, les valeurs familiales et l'intégration harmonieuse au sein de la société québécoise.</p>
+          <div class="about-stats">
+            <div class="stat">
+              <span class="stat__number">500+</span>
+              <span class="stat__label">Familles</span>
+            </div>
+            <div class="stat">
+              <span class="stat__number">5</span>
+              <span class="stat__label">Prières quotidiennes</span>
+            </div>
+            <div class="stat">
+              <span class="stat__number">15+</span>
+              <span class="stat__label">Programmes</span>
+            </div>
+          </div>
+        </div>
+        <div class="about-visual">
+          <div class="geometric-art">
+            <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <pattern id="geo" x="0" y="0" width="80" height="80" patternUnits="userSpaceOnUse">
+                  <polygon points="40,5 75,25 75,55 40,75 5,55 5,25" fill="none" stroke="currentColor" stroke-width="1" opacity="0.4"/>
+                  <polygon points="40,15 65,30 65,50 40,65 15,50 15,30" fill="none" stroke="currentColor" stroke-width="0.5" opacity="0.3"/>
+                </pattern>
+              </defs>
+              <rect width="400" height="400" fill="url(#geo)"/>
+              <circle cx="200" cy="200" r="120" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5"/>
+              <circle cx="200" cy="200" r="90" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.4"/>
+              <circle cx="200" cy="200" r="60" fill="none" stroke="currentColor" stroke-width="1" opacity="0.3"/>
+              <g transform="translate(200,200)">
+                <polygon points="0,-80 46,63 -75,-29 75,-29 -46,63" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.6"/>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PROGRAMS ===== -->
+  <section class="section section--alt" id="programs">
+    <div class="container">
+      <div class="section__header">
+        <span class="section__tag">Nos services</span>
+        <h2 class="section__title">Programmes &amp; Activités</h2>
+        <p class="section__subtitle">Nous offrons une variété de programmes pour toute la communauté</p>
+      </div>
+      <div class="programs-grid">
+        <div class="program-card">
+          <div class="program-card__icon">📖</div>
+          <h3>École du Coran</h3>
+          <p>Apprentissage de la récitation et mémorisation du Saint Coran pour enfants et adultes.</p>
+          <span class="program-card__schedule">Sam &amp; Dim · 9h–12h</span>
+        </div>
+        <div class="program-card">
+          <div class="program-card__icon">🎓</div>
+          <h3>Cours d'arabe</h3>
+          <p>Cours de langue arabe pour tous les niveaux, des débutants aux avancés.</p>
+          <span class="program-card__schedule">Samedi · 10h–12h</span>
+        </div>
+        <div class="program-card">
+          <div class="program-card__icon">👨‍👩‍👧‍👦</div>
+          <h3>Activités familiales</h3>
+          <p>Événements communautaires, célébrations d'Eid, soirées thématiques et rassemblements.</p>
+          <span class="program-card__schedule">Mensuel</span>
+        </div>
+        <div class="program-card">
+          <div class="program-card__icon">🌙</div>
+          <h3>Ramadan</h3>
+          <p>Tarawih chaque soir, iftar communautaire et programmes spéciaux durant le mois béni.</p>
+          <span class="program-card__schedule">Ramadan annuel</span>
+        </div>
+        <div class="program-card">
+          <div class="program-card__icon">👶</div>
+          <h3>Jeunesse</h3>
+          <p>Programmes dédiés aux jeunes : sports, activités culturelles et développement personnel islamique.</p>
+          <span class="program-card__schedule">Vendredi soir</span>
+        </div>
+        <div class="program-card">
+          <div class="program-card__icon">💍</div>
+          <h3>Services religieux</h3>
+          <p>Nikah, janaza, consultations religieuses et accompagnement spirituel de la communauté.</p>
+          <span class="program-card__schedule">Sur rendez-vous</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== DONATION (Zeffy) ===== -->
+  <section class="section donate-section" id="donate">
+    <div class="container">
+      <div class="donate-intro">
+        <h2>Soutenez votre mosquée</h2>
+        <p>Vos dons permettent de maintenir nos services, programmes éducatifs et activités communautaires.<br/>
+        Nous utilisons <strong>Zeffy</strong> — une plateforme 100 % gratuite pour les organismes sans but lucratif canadiens.<br/>
+        <em>Aucuns frais de plateforme : 100 % de votre don va directement au CCML.</em></p>
+      </div>
+      <!-- ╔══════════════════════════════════════════════════════════════╗
+           ║  ZEFFY EMBED — Remplacez l'URL ci-dessous par votre URL    ║
+           ║  Zeffy une fois votre formulaire de don créé :             ║
+           ║  https://www.zeffy.com/fr-CA/embed/donation-form/VOTRE-ID  ║
+           ╚══════════════════════════════════════════════════════════════╝ -->
+      <div class="zeffy-wrapper">
+        <iframe
+          id="zeffyFrame"
+          title="Don au CCML via Zeffy"
+          src="https://www.zeffy.com/fr-CA/embed/donation-form/VOTRE-ZEFFY-ID"
+          allow="payment"
+          loading="lazy"
+          class="zeffy-frame">
+        </iframe>
+        <!-- Fallback affiché si Zeffy n'est pas encore configuré -->
+        <div class="zeffy-fallback" id="zeffyFallback">
+          <div class="zeffy-fallback__icon">🕌</div>
+          <h3>Don en ligne bientôt disponible</h3>
+          <p>Notre formulaire de don en ligne sera disponible prochainement.</p>
+          <p>En attendant, vous pouvez faire votre don par :</p>
+          <div class="donate-methods-inline">
+            <div class="donate-method-badge">
+              <strong>Virement Interac</strong>
+              <span>dons@ccmlongueuil.ca</span>
+            </div>
+            <div class="donate-method-badge">
+              <strong>En personne</strong>
+              <span>Bureau administratif, aux heures de prière</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CONTACT ===== -->
+  <section class="section" id="contact">
+    <div class="container">
+      <div class="section__header">
+        <span class="section__tag">Nous joindre</span>
+        <h2 class="section__title">Contact &amp; Adresse</h2>
+      </div>
+      <div class="contact-grid">
+        <div class="contact-info">
+          <div class="contact-item">
+            <div class="contact-item__icon">📍</div>
+            <div>
+              <strong>Adresse</strong>
+              <p>Centre Culturel Musulman de Longueuil<br/>Longueuil, Québec, Canada</p>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-item__icon">📞</div>
+            <div>
+              <strong>Téléphone</strong>
+              <p><a href="tel:+14505000000">(450) 500-0000</a></p>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-item__icon">✉️</div>
+            <div>
+              <strong>Courriel</strong>
+              <p><a href="mailto:info@ccmlongueuil.ca">info@ccmlongueuil.ca</a></p>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-item__icon">🕐</div>
+            <div>
+              <strong>Heures d'ouverture du bureau</strong>
+              <p>Lun–Ven : 10h–18h<br/>Sam–Dim : 9h–17h</p>
+            </div>
+          </div>
+        </div>
+        <div class="contact-form-wrapper">
+          <!--
+            FORMSPREE : Remplacez "VOTRE-FORMSPREE-ID" par votre ID obtenu sur formspree.io
+            Exemple : action="https://formspree.io/f/xpwzjkrb"
+            Voir instructions dans le README.md du projet.
+          -->
+          <form class="contact-form" id="contactForm"
+                action="https://formspree.io/f/VOTRE-FORMSPREE-ID"
+                method="POST">
+            <h3>Envoyez-nous un message</h3>
+            <!-- Champ caché : redirige les emails selon le sujet -->
+            <input type="hidden" name="_subject" id="formSubjectHidden" value="Message du site CCML" />
+            <input type="hidden" name="_language" value="fr" />
+            <div class="form-group">
+              <label for="name">Nom complet</label>
+              <input type="text" id="name" name="name" placeholder="Votre nom" required />
+            </div>
+            <div class="form-group">
+              <label for="email">Courriel</label>
+              <input type="email" id="email" name="email" placeholder="votre@email.com" required />
+            </div>
+            <div class="form-group">
+              <label for="phone">Téléphone (optionnel)</label>
+              <input type="tel" id="phone" name="phone" placeholder="(514) 000-0000" />
+            </div>
+            <div class="form-group">
+              <label for="subject">Sujet</label>
+              <select id="subject" name="subject" required>
+                <option value="">Sélectionnez un sujet</option>
+                <option value="Horaires de prière">Horaires de prière</option>
+                <option value="Programmes &amp; cours">Programmes &amp; cours</option>
+                <option value="École du Coran / Arabe">École du Coran / Arabe</option>
+                <option value="Cérémonie de mariage (Nikah)">Cérémonie de mariage (Nikah)</option>
+                <option value="Service funéraire (Janaza)">Service funéraire (Janaza)</option>
+                <option value="Don &amp; soutien financier">Don &amp; soutien financier</option>
+                <option value="Location de salle">Location de salle</option>
+                <option value="Bénévolat">Bénévolat</option>
+                <option value="Autre">Autre</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="message">Message</label>
+              <textarea id="message" name="message" rows="4" placeholder="Votre message…" required></textarea>
+            </div>
+            <button type="submit" class="btn btn--primary btn--full" id="submitBtn">
+              Envoyer le message
+            </button>
+            <p class="form-notice" id="formNotice"></p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="footer__brand">
+        <div class="logo logo--light">
+          <div class="logo__icon">
+            <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="30" cy="30" r="28" stroke="currentColor" stroke-width="2"/>
+              <path d="M30 12 C22 12 16 18 16 26 C16 32 20 37 26 40 L26 44 L30 46 L34 44 L34 40 C40 37 44 32 44 26 C44 18 38 12 30 12Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+              <line x1="30" y1="6" x2="30" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="30" cy="5" r="2" fill="currentColor"/>
+              <line x1="22" y1="46" x2="38" y2="46" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <line x1="20" y1="50" x2="40" y2="50" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="logo__text">
+            <span class="logo__title">CCML</span>
+            <span class="logo__subtitle">Centre Culturel Musulman de Longueuil</span>
+          </div>
+        </div>
+        <p class="footer__tagline">Serving the Muslim community of the South Shore since our founding.</p>
+      </div>
+      <div class="footer__links">
+        <div class="footer__col">
+          <h4>Navigation</h4>
+          <a href="#prayer-times">Horaires</a>
+          <a href="#about">À propos</a>
+          <a href="#programs">Programmes</a>
+          <a href="#calendar">Calendrier</a>
+        </div>
+        <div class="footer__col">
+          <h4>Services</h4>
+          <a href="#">École du Coran</a>
+          <a href="#">Cours d'arabe</a>
+          <a href="#">Nikah</a>
+          <a href="#">Janaza</a>
+        </div>
+        <div class="footer__col">
+          <h4>Communauté</h4>
+          <a href="#donate">Faire un don</a>
+          <a href="#contact">Contact</a>
+          <a href="#">Facebook</a>
+          <a href="#">Instagram</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <p>© <span id="footerYear"></span> Centre Culturel Musulman de Longueuil. Tous droits réservés.</p>
+    </div>
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
