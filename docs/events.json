@@ -1,29 +1,11 @@
 [
   {
-    "id": "1",
-    "title": "Conférence : Les piliers de l'Islam",
-    "date": "2026-04-04",
-    "time": "19:30",
+    "id": "1774239108490",
+    "title": "dsad",
+    "date": "2026-03-19",
+    "time": "03:21",
     "category": "conference",
-    "description": "Conférence animée par le cheikh de la communauté sur les cinq piliers de l'Islam. Ouverte à tous.",
-    "location": "Salle principale"
-  },
-  {
-    "id": "2",
-    "title": "Cours d'arabe – Niveau débutant",
-    "date": "2026-03-28",
-    "time": "10:00",
-    "category": "cours",
-    "description": "Reprise des cours d'arabe pour débutants. Inscription requise.",
-    "location": "Salle de classe"
-  },
-  {
-    "id": "3",
-    "title": "Collecte de fonds – Ramadan 2026",
-    "date": "2026-04-10",
-    "time": "18:00",
-    "category": "evenement",
-    "description": "Soirée iftar communautaire et collecte de fonds pour les travaux de la mosquée.",
-    "location": "Salle principale"
+    "location": "dsad",
+    "description": ""
   }
 ]
