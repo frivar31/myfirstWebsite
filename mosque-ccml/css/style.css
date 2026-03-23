@@ -676,3 +676,54 @@ button { cursor: pointer; font-family: inherit; border: none; background: none; 
   .footer__links { grid-template-columns: 1fr; }
   .amount-grid { grid-template-columns: repeat(2,1fr); }
 }
+
+/* ── MAP ── */
+.map-wrapper { margin-top: 20px; border-radius: 12px; overflow: hidden; box-shadow: var(--shadow-md); }
+.map-link {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: .85rem; color: var(--green-700); font-weight: 500;
+  margin-top: 6px; text-decoration: none;
+}
+.map-link:hover { color: var(--green-900); text-decoration: underline; }
+.contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
+@media(max-width:768px){ .contact-grid { grid-template-columns: 1fr; } }
+
+/* ── EVENTS ── */
+.events-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+.event-card {
+  background: var(--white); border-radius: var(--radius-md);
+  padding: 22px; box-shadow: var(--shadow-sm);
+  border: 1.5px solid var(--gray-200);
+  transition: box-shadow var(--transition), transform var(--transition);
+  display: flex; flex-direction: column; gap: 10px;
+}
+.event-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.event-card__date {
+  display: flex; align-items: center; gap: 12px;
+}
+.event-card__day-block {
+  background: var(--green-900); color: var(--white);
+  border-radius: 10px; padding: 8px 12px; text-align: center; min-width: 52px;
+  flex-shrink: 0;
+}
+.event-card__day   { font-size: 1.4rem; font-weight: 700; line-height: 1; }
+.event-card__month { font-size: .65rem; text-transform: uppercase; letter-spacing: .08em; opacity: .8; }
+.event-card__meta  { font-size: .8rem; color: var(--gray-500); }
+.event-card__title { font-weight: 600; font-size: 1rem; color: var(--gray-900); }
+.event-card__desc  { font-size: .875rem; color: var(--gray-600); flex: 1; }
+.event-card__badge {
+  display: inline-block; padding: 2px 10px; border-radius: 999px;
+  font-size: .72rem; font-weight: 600; align-self: flex-start;
+  text-transform: capitalize;
+}
+.event-card__badge--conference { background: #dbeafe; color: #1d4ed8; }
+.event-card__badge--cours      { background: #fef3c7; color: #92400e; }
+.event-card__badge--evenement  { background: var(--green-100); color: var(--green-900); }
+.event-card__badge--autre      { background: var(--gray-100); color: var(--gray-600); }
+
+.events-loading { text-align: center; padding: 32px; color: var(--gray-500); }
+.events-empty   { text-align: center; padding: 32px; color: var(--gray-500); }
+.hidden         { display: none !important; }

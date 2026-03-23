@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Administration – CCML</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: #f3f4f6; color: #111827; min-height: 100vh; }
+
+    /* ── LOGIN ── */
+    .login-screen {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; padding: 24px;
+    }
+    .login-card {
+      background: #fff; border-radius: 16px; padding: 40px;
+      width: 100%; max-width: 420px;
+      box-shadow: 0 12px 40px rgba(0,0,0,.12);
+    }
+    .login-card h1 { font-size: 1.5rem; margin-bottom: 8px; color: #064e3b; }
+    .login-card p  { font-size: .875rem; color: #6b7280; margin-bottom: 24px; }
+
+    /* ── APP ── */
+    .app { display: none; }
+    .topbar {
+      background: #064e3b; color: #fff; padding: 16px 24px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .topbar h1 { font-size: 1.1rem; }
+    .topbar-actions { display: flex; gap: 12px; }
+    .main { max-width: 900px; margin: 0 auto; padding: 32px 16px; }
+
+    /* ── FORM ── */
+    .card {
+      background: #fff; border-radius: 12px; padding: 28px;
+      box-shadow: 0 4px 12px rgba(0,0,0,.06); margin-bottom: 28px;
+    }
+    .card h2 { font-size: 1.1rem; margin-bottom: 20px; color: #064e3b; border-bottom: 2px solid #d1fae5; padding-bottom: 12px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media(max-width:600px){ .form-row { grid-template-columns: 1fr; } }
+    .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+    .form-group label { font-size: .8rem; font-weight: 600; color: #374151; text-transform: uppercase; letter-spacing: .05em; }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      border: 1.5px solid #e5e7eb; border-radius: 8px;
+      padding: 10px 14px; font-size: .95rem; font-family: inherit;
+      transition: border-color .2s;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus { outline: none; border-color: #059669; }
+    .form-group textarea { resize: vertical; min-height: 80px; }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 20px; border-radius: 8px; font-size: .9rem;
+      font-weight: 600; cursor: pointer; border: none; transition: .2s;
+    }
+    .btn--primary { background: #059669; color: #fff; }
+    .btn--primary:hover { background: #047857; }
+    .btn--danger  { background: #ef4444; color: #fff; }
+    .btn--danger:hover { background: #dc2626; }
+    .btn--outline { background: transparent; border: 1.5px solid #059669; color: #059669; }
+    .btn--outline:hover { background: #ecfdf5; }
+    .btn--ghost { background: transparent; border: 1.5px solid rgba(255,255,255,.4); color: #fff; }
+    .btn--ghost:hover { background: rgba(255,255,255,.1); }
+    .btn--sm { padding: 6px 12px; font-size: .8rem; }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+    .btn--full { width: 100%; justify-content: center; }
+
+    /* ── EVENTS LIST ── */
+    .event-item {
+      border: 1.5px solid #e5e7eb; border-radius: 10px;
+      padding: 16px; margin-bottom: 12px;
+      display: flex; align-items: flex-start; gap: 16px;
+    }
+    .event-item__info { flex: 1; }
+    .event-item__title { font-weight: 600; font-size: .95rem; }
+    .event-item__meta { font-size: .8rem; color: #6b7280; margin-top: 4px; }
+    .event-item__desc { font-size: .85rem; color: #374151; margin-top: 6px; }
+    .event-item__actions { display: flex; gap: 8px; flex-shrink: 0; }
+    .badge {
+      display: inline-block; padding: 2px 10px; border-radius: 999px;
+      font-size: .75rem; font-weight: 600; text-transform: capitalize;
+    }
+    .badge--conference { background: #dbeafe; color: #1d4ed8; }
+    .badge--cours      { background: #fef3c7; color: #92400e; }
+    .badge--evenement  { background: #d1fae5; color: #064e3b; }
+    .badge--autre      { background: #f3f4f6; color: #374151; }
+
+    /* ── NOTICE ── */
+    .notice {
+      padding: 12px 16px; border-radius: 8px; font-size: .875rem;
+      margin-top: 12px; display: none;
+    }
+    .notice.success { background: #d1fae5; color: #064e3b; display: block; }
+    .notice.error   { background: #fee2e2; color: #991b1b; display: block; }
+    .notice.info    { background: #dbeafe; color: #1e40af; display: block; }
+
+    /* ── SETUP ── */
+    .setup-section { border: 2px dashed #d1d5db; border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+    .setup-section h3 { font-size: .95rem; margin-bottom: 12px; color: #374151; }
+    .token-row { display: flex; gap: 10px; }
+    .token-row input { flex: 1; }
+
+    .empty-state { text-align: center; padding: 32px; color: #9ca3af; }
+  </style>
+</head>
+<body>
+
+<!-- ===== LOGIN ===== -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <h1>🔐 Administration CCML</h1>
+    <p>Connectez-vous pour gérer les événements du site.</p>
+    <div class="form-group">
+      <label>Mot de passe</label>
+      <input type="password" id="loginPwd" placeholder="Mot de passe admin" onkeydown="if(event.key==='Enter')doLogin()" />
+    </div>
+    <button class="btn btn--primary btn--full" onclick="doLogin()">Se connecter</button>
+    <p class="notice error" id="loginError">Mot de passe incorrect.</p>
+    <p style="margin-top:16px;font-size:.75rem;color:#9ca3af;">
+      Mot de passe par défaut : <code>ccml2026</code> — changez-le dans les paramètres.
+    </p>
+  </div>
+</div>
+
+<!-- ===== APP ===== -->
+<div class="app" id="app">
+
+  <div class="topbar">
+    <h1>🕌 Administration CCML</h1>
+    <div class="topbar-actions">
+      <a href="index.html" class="btn btn--ghost btn--sm">Voir le site</a>
+      <button class="btn btn--ghost btn--sm" onclick="doLogout()">Déconnexion</button>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- Configuration GitHub -->
+    <div class="card" id="githubSetupCard">
+      <h2>⚙️ Configuration GitHub (une seule fois)</h2>
+      <p style="font-size:.875rem;color:#6b7280;margin-bottom:16px;">
+        Pour sauvegarder les événements sur le site, entrez vos informations GitHub.<br/>
+        Le token n'est stocké que dans votre navigateur (localStorage).
+      </p>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nom d'utilisateur GitHub</label>
+          <input type="text" id="ghUser" placeholder="ex: frivar31" />
+        </div>
+        <div class="form-group">
+          <label>Nom du dépôt</label>
+          <input type="text" id="ghRepo" placeholder="ex: myfirstWebsite" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Chemin du fichier events.json dans le dépôt</label>
+        <input type="text" id="ghPath" placeholder="ex: mosque-ccml/events.json" />
+      </div>
+      <div class="form-group">
+        <label>Branche</label>
+        <input type="text" id="ghBranch" placeholder="ex: main" />
+      </div>
+      <div class="form-group">
+        <label>Personal Access Token GitHub</label>
+        <div class="token-row">
+          <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxx" />
+          <button class="btn btn--outline btn--sm" onclick="toggleTokenVisibility()">👁</button>
+        </div>
+        <small style="color:#6b7280;font-size:.75rem;">
+          Créez un token sur GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic) → scope: <strong>repo</strong>
+        </small>
+      </div>
+      <button class="btn btn--primary" onclick="saveGithubConfig()">Enregistrer la configuration</button>
+      <p class="notice" id="ghNotice"></p>
+    </div>
+
+    <!-- Ajouter un événement -->
+    <div class="card">
+      <h2>➕ Ajouter / Modifier un événement</h2>
+      <input type="hidden" id="editId" />
+      <div class="form-row">
+        <div class="form-group">
+          <label>Titre *</label>
+          <input type="text" id="evTitle" placeholder="ex: Conférence islamique" required />
+        </div>
+        <div class="form-group">
+          <label>Catégorie</label>
+          <select id="evCategory">
+            <option value="evenement">Événement</option>
+            <option value="conference">Conférence</option>
+            <option value="cours">Cours</option>
+            <option value="autre">Autre</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Date *</label>
+          <input type="date" id="evDate" required />
+        </div>
+        <div class="form-group">
+          <label>Heure</label>
+          <input type="time" id="evTime" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Lieu</label>
+        <input type="text" id="evLocation" placeholder="ex: Salle principale" />
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea id="evDesc" placeholder="Décrivez l'événement…"></textarea>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <button class="btn btn--primary" onclick="saveEvent()">💾 Sauvegarder</button>
+        <button class="btn btn--outline" onclick="clearForm()">✕ Annuler</button>
+      </div>
+      <p class="notice" id="formNotice"></p>
+    </div>
+
+    <!-- Liste des événements -->
+    <div class="card">
+      <h2>📋 Événements enregistrés</h2>
+      <div id="eventsList">
+        <div class="empty-state">Aucun événement. Ajoutez-en un ci-dessus.</div>
+      </div>
+      <div style="margin-top:16px;display:flex;gap:12px;flex-wrap:wrap;">
+        <button class="btn btn--primary" onclick="publishToGithub()">🚀 Publier sur le site (GitHub)</button>
+        <button class="btn btn--outline" onclick="exportJson()">⬇️ Exporter JSON</button>
+      </div>
+      <p class="notice" id="publishNotice"></p>
+      <p style="font-size:.75rem;color:#9ca3af;margin-top:8px;">
+        Les modifications sont sauvegardées localement. Cliquez sur "Publier" pour les mettre en ligne.
+      </p>
+    </div>
+
+    <!-- Changer le mot de passe -->
+    <div class="card">
+      <h2>🔑 Changer le mot de passe</h2>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nouveau mot de passe</label>
+          <input type="password" id="newPwd" placeholder="Nouveau mot de passe" />
+        </div>
+        <div class="form-group">
+          <label>Confirmer</label>
+          <input type="password" id="confirmPwd" placeholder="Confirmer le mot de passe" />
+        </div>
+      </div>
+      <button class="btn btn--outline" onclick="changePassword()">Changer le mot de passe</button>
+      <p class="notice" id="pwdNotice"></p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── CONSTANTS ──────────────────────────────────────────────────────────────
+const DEFAULT_PWD_HASH = btoa('ccml2026'); // base64 simple (not cryptographic, good enough for local admin)
+
+// ── AUTH ────────────────────────────────────────────────────────────────────
+function getStoredHash() {
+  return localStorage.getItem('ccml_admin_hash') || DEFAULT_PWD_HASH;
+}
+
+function doLogin() {
+  const pwd = document.getElementById('loginPwd').value;
+  if (btoa(pwd) === getStoredHash()) {
+    sessionStorage.setItem('ccml_logged', '1');
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    loadAll();
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+  }
+}
+
+function doLogout() {
+  sessionStorage.removeItem('ccml_logged');
+  location.reload();
+}
+
+function changePassword() {
+  const p1 = document.getElementById('newPwd').value;
+  const p2 = document.getElementById('confirmPwd').value;
+  const n  = document.getElementById('pwdNotice');
+  if (!p1) { showNotice(n, 'error', 'Entrez un mot de passe.'); return; }
+  if (p1 !== p2) { showNotice(n, 'error', 'Les mots de passe ne correspondent pas.'); return; }
+  localStorage.setItem('ccml_admin_hash', btoa(p1));
+  showNotice(n, 'success', 'Mot de passe changé avec succès.');
+  document.getElementById('newPwd').value = '';
+  document.getElementById('confirmPwd').value = '';
+}
+
+// ── GITHUB CONFIG ────────────────────────────────────────────────────────────
+function saveGithubConfig() {
+  const cfg = {
+    user:   document.getElementById('ghUser').value.trim(),
+    repo:   document.getElementById('ghRepo').value.trim(),
+    path:   document.getElementById('ghPath').value.trim(),
+    branch: document.getElementById('ghBranch').value.trim() || 'main',
+    token:  document.getElementById('ghToken').value.trim(),
+  };
+  if (!cfg.user || !cfg.repo || !cfg.path || !cfg.token) {
+    showNotice(document.getElementById('ghNotice'), 'error', 'Tous les champs sont requis.');
+    return;
+  }
+  localStorage.setItem('ccml_gh_config', JSON.stringify(cfg));
+  showNotice(document.getElementById('ghNotice'), 'success', 'Configuration enregistrée.');
+}
+
+function loadGithubConfig() {
+  const raw = localStorage.getItem('ccml_gh_config');
+  if (!raw) return null;
+  return JSON.parse(raw);
+}
+
+function toggleTokenVisibility() {
+  const inp = document.getElementById('ghToken');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+// ── EVENTS CRUD ──────────────────────────────────────────────────────────────
+function getEvents() {
+  const raw = localStorage.getItem('ccml_events');
+  return raw ? JSON.parse(raw) : [];
+}
+
+function setEvents(events) {
+  localStorage.setItem('ccml_events', JSON.stringify(events));
+}
+
+function saveEvent() {
+  const id    = document.getElementById('editId').value;
+  const title = document.getElementById('evTitle').value.trim();
+  const date  = document.getElementById('evDate').value;
+  const n     = document.getElementById('formNotice');
+
+  if (!title || !date) {
+    showNotice(n, 'error', 'Le titre et la date sont requis.');
+    return;
+  }
+
+  const ev = {
+    id:          id || String(Date.now()),
+    title,
+    date,
+    time:        document.getElementById('evTime').value,
+    category:    document.getElementById('evCategory').value,
+    location:    document.getElementById('evLocation').value.trim(),
+    description: document.getElementById('evDesc').value.trim(),
+  };
+
+  const events = getEvents();
+  if (id) {
+    const idx = events.findIndex(e => e.id === id);
+    if (idx >= 0) events[idx] = ev; else events.push(ev);
+  } else {
+    events.push(ev);
+  }
+  // Sort by date
+  events.sort((a, b) => a.date.localeCompare(b.date));
+  setEvents(events);
+  renderEventsList();
+  clearForm();
+  showNotice(n, 'success', id ? 'Événement modifié.' : 'Événement ajouté.');
+}
+
+function deleteEvent(id) {
+  if (!confirm('Supprimer cet événement ?')) return;
+  const events = getEvents().filter(e => e.id !== id);
+  setEvents(events);
+  renderEventsList();
+}
+
+function editEvent(id) {
+  const ev = getEvents().find(e => e.id === id);
+  if (!ev) return;
+  document.getElementById('editId').value       = ev.id;
+  document.getElementById('evTitle').value      = ev.title;
+  document.getElementById('evDate').value       = ev.date;
+  document.getElementById('evTime').value       = ev.time || '';
+  document.getElementById('evCategory').value   = ev.category || 'evenement';
+  document.getElementById('evLocation').value   = ev.location || '';
+  document.getElementById('evDesc').value       = ev.description || '';
+  document.querySelector('.card h2[id]')?.scrollIntoView({ behavior: 'smooth' });
+}
+
+function clearForm() {
+  document.getElementById('editId').value     = '';
+  document.getElementById('evTitle').value    = '';
+  document.getElementById('evDate').value     = '';
+  document.getElementById('evTime').value     = '';
+  document.getElementById('evCategory').value = 'evenement';
+  document.getElementById('evLocation').value = '';
+  document.getElementById('evDesc').value     = '';
+  document.getElementById('formNotice').className = 'notice';
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+const MONTHS = ['jan','fév','mars','avr','mai','juin','juil','août','sep','oct','nov','déc'];
+
+function renderEventsList() {
+  const events = getEvents();
+  const el = document.getElementById('eventsList');
+  if (!events.length) {
+    el.innerHTML = '<div class="empty-state">Aucun événement. Ajoutez-en un ci-dessus.</div>';
+    return;
+  }
+  el.innerHTML = events.map(ev => {
+    const [y, m, d] = ev.date.split('-');
+    const dateStr = `${parseInt(d)} ${MONTHS[parseInt(m)-1]} ${y}`;
+    return `
+      <div class="event-item">
+        <div class="event-item__info">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span class="event-item__title">${escHtml(ev.title)}</span>
+            <span class="badge badge--${ev.category || 'autre'}">${ev.category || 'autre'}</span>
+          </div>
+          <div class="event-item__meta">
+            📅 ${dateStr}${ev.time ? ' · ' + ev.time : ''}${ev.location ? ' · 📍 ' + escHtml(ev.location) : ''}
+          </div>
+          ${ev.description ? `<div class="event-item__desc">${escHtml(ev.description)}</div>` : ''}
+        </div>
+        <div class="event-item__actions">
+          <button class="btn btn--outline btn--sm" onclick="editEvent('${ev.id}')">✏️</button>
+          <button class="btn btn--danger btn--sm"  onclick="deleteEvent('${ev.id}')">🗑</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ── PUBLISH TO GITHUB ─────────────────────────────────────────────────────────
+async function publishToGithub() {
+  const cfg = loadGithubConfig();
+  const n = document.getElementById('publishNotice');
+  if (!cfg) {
+    showNotice(n, 'error', 'Configurez d\'abord vos informations GitHub ci-dessus.');
+    return;
+  }
+
+  const events = getEvents();
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(events, null, 2))));
+
+  // Get current SHA of the file (needed for update)
+  const apiBase = `https://api.github.com/repos/${cfg.user}/${cfg.repo}/contents/${cfg.path}`;
+  const headers = {
+    'Authorization': `token ${cfg.token}`,
+    'Accept': 'application/vnd.github+json',
+    'Content-Type': 'application/json',
+  };
+
+  showNotice(n, 'info', 'Publication en cours…');
+
+  try {
+    let sha = null;
+    const getRes = await fetch(`${apiBase}?ref=${cfg.branch}`, { headers });
+    if (getRes.ok) {
+      const fileData = await getRes.json();
+      sha = fileData.sha;
+    }
+
+    const body = {
+      message: `Mise à jour des événements CCML – ${new Date().toLocaleDateString('fr-CA')}`,
+      content,
+      branch: cfg.branch,
+    };
+    if (sha) body.sha = sha;
+
+    const putRes = await fetch(apiBase, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify(body),
+    });
+
+    if (putRes.ok) {
+      showNotice(n, 'success', '✅ Événements publiés avec succès sur GitHub ! Le site sera mis à jour dans quelques secondes.');
+    } else {
+      const err = await putRes.json();
+      showNotice(n, 'error', `Erreur GitHub : ${err.message}`);
+    }
+  } catch (e) {
+    showNotice(n, 'error', `Erreur réseau : ${e.message}`);
+  }
+}
+
+// ── EXPORT JSON ───────────────────────────────────────────────────────────────
+function exportJson() {
+  const events = getEvents();
+  const blob = new Blob([JSON.stringify(events, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'events.json';
+  a.click();
+}
+
+// ── UTILS ─────────────────────────────────────────────────────────────────────
+function showNotice(el, type, msg) {
+  el.className = `notice ${type}`;
+  el.textContent = msg;
+  if (type !== 'info') setTimeout(() => { el.className = 'notice'; el.textContent = ''; }, 5000);
+}
+
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+function loadAll() {
+  // Load GitHub config into fields
+  const cfg = loadGithubConfig();
+  if (cfg) {
+    document.getElementById('ghUser').value   = cfg.user;
+    document.getElementById('ghRepo').value   = cfg.repo;
+    document.getElementById('ghPath').value   = cfg.path;
+    document.getElementById('ghBranch').value = cfg.branch;
+    document.getElementById('ghToken').value  = cfg.token;
+  }
+  renderEventsList();
+}
+
+// Check session on load
+if (sessionStorage.getItem('ccml_logged') === '1') {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  loadAll();
+}
+</script>
+</body>
+</html>
