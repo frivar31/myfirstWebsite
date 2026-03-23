@@ -169,7 +169,9 @@ async function loadCalendar(year, month) {
       const t = day.timings;
       const d = day.date.gregorian;
       const dayNum   = parseInt(d.day);
-      const dayOfWeek = new Date(d.date).getDay(); // 0=Sun
+      // d.date is in "DD-MM-YYYY" format – parse manually to avoid Invalid Date
+      const [dd, mm, yyyy] = d.date.split('-').map(Number);
+      const dayOfWeek = new Date(yyyy, mm - 1, dd).getDay(); // 0=Sun
       const isFriday = dayOfWeek === 5;
       const isToday  = year === today.getFullYear() && month === today.getMonth() + 1 && dayNum === today.getDate();
 
@@ -193,6 +195,63 @@ async function loadCalendar(year, month) {
     });
   } catch (e) {
     tbody.innerHTML = '<tr><td colspan="8" class="loading-cell">Erreur de chargement. Veuillez réessayer.</td></tr>';
+  }
+}
+
+// ── EVENTS ────────────────────────────────────────────────────────────────────
+
+const MONTHS_SHORT_FR = ['jan','fév','mars','avr','mai','juin','juil','août','sep','oct','nov','déc'];
+
+async function loadEvents() {
+  const grid  = document.getElementById('eventsGrid');
+  const empty = document.getElementById('eventsEmpty');
+  if (!grid) return;
+
+  try {
+    // Try localStorage first (from admin page), then fall back to events.json
+    let events = null;
+    const stored = localStorage.getItem('ccml_events');
+    if (stored) {
+      events = JSON.parse(stored);
+    } else {
+      const res = await fetch('events.json?v=' + Date.now());
+      events = res.ok ? await res.json() : [];
+    }
+
+    // Filter upcoming events (today and future)
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const upcoming = events.filter(ev => new Date(ev.date + 'T00:00:00') >= today);
+
+    grid.innerHTML = '';
+    if (!upcoming.length) {
+      grid.classList.add('hidden');
+      empty.classList.remove('hidden');
+      return;
+    }
+
+    upcoming.forEach(ev => {
+      const [y, m, d] = ev.date.split('-').map(Number);
+      const card = document.createElement('div');
+      card.className = 'event-card';
+      card.innerHTML = `
+        <div class="event-card__date">
+          <div class="event-card__day-block">
+            <div class="event-card__day">${String(d).padStart(2,'0')}</div>
+            <div class="event-card__month">${MONTHS_SHORT_FR[m-1]}</div>
+          </div>
+          <div class="event-card__meta">
+            ${ev.time ? ev.time + ' · ' : ''}${ev.location ? '📍 ' + ev.location : ''}
+          </div>
+        </div>
+        <div class="event-card__title">${ev.title}</div>
+        ${ev.description ? `<div class="event-card__desc">${ev.description}</div>` : ''}
+        <span class="event-card__badge event-card__badge--${ev.category || 'autre'}">${ev.category || 'autre'}</span>
+      `;
+      grid.appendChild(card);
+    });
+  } catch (e) {
+    grid.innerHTML = '<p style="color:#6b7280;text-align:center;padding:24px">Impossible de charger les événements.</p>';
   }
 }
 
@@ -312,6 +371,7 @@ document.getElementById('footerYear').textContent = new Date().getFullYear();
 
   loadToday();
   loadCalendar(calYear, calMonth);
+  loadEvents();
   initScrollSpy();
 
   document.getElementById('prevMonth').addEventListener('click', () => {
