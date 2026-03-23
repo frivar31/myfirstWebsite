@@ -220,32 +220,44 @@
     </div>
   </section>
 
-  <!-- ===== DONATION ===== -->
+  <!-- ===== DONATION (Zeffy) ===== -->
   <section class="section donate-section" id="donate">
     <div class="container">
-      <div class="donate-content">
-        <div class="donate-text">
-          <h2>Soutenez votre mosquée</h2>
-          <p>Vos dons permettent de maintenir nos services, programmes éducatifs et activités communautaires. Chaque contribution, grande ou petite, fait une différence.</p>
-          <div class="donate-methods">
-            <div class="donate-method">
+      <div class="donate-intro">
+        <h2>Soutenez votre mosquée</h2>
+        <p>Vos dons permettent de maintenir nos services, programmes éducatifs et activités communautaires.<br/>
+        Nous utilisons <strong>Zeffy</strong> — une plateforme 100 % gratuite pour les organismes sans but lucratif canadiens.<br/>
+        <em>Aucuns frais de plateforme : 100 % de votre don va directement au CCML.</em></p>
+      </div>
+      <!-- ╔══════════════════════════════════════════════════════════════╗
+           ║  ZEFFY EMBED — Remplacez l'URL ci-dessous par votre URL    ║
+           ║  Zeffy une fois votre formulaire de don créé :             ║
+           ║  https://www.zeffy.com/fr-CA/embed/donation-form/VOTRE-ID  ║
+           ╚══════════════════════════════════════════════════════════════╝ -->
+      <div class="zeffy-wrapper">
+        <iframe
+          id="zeffyFrame"
+          title="Don au CCML via Zeffy"
+          src="https://www.zeffy.com/fr-CA/embed/donation-form/VOTRE-ZEFFY-ID"
+          allow="payment"
+          loading="lazy"
+          class="zeffy-frame">
+        </iframe>
+        <!-- Fallback affiché si Zeffy n'est pas encore configuré -->
+        <div class="zeffy-fallback" id="zeffyFallback">
+          <div class="zeffy-fallback__icon">🕌</div>
+          <h3>Don en ligne bientôt disponible</h3>
+          <p>Notre formulaire de don en ligne sera disponible prochainement.</p>
+          <p>En attendant, vous pouvez faire votre don par :</p>
+          <div class="donate-methods-inline">
+            <div class="donate-method-badge">
               <strong>Virement Interac</strong>
               <span>dons@ccmlongueuil.ca</span>
             </div>
-            <div class="donate-method">
+            <div class="donate-method-badge">
               <strong>En personne</strong>
-              <span>Bureau administratif, heures de prière</span>
+              <span>Bureau administratif, aux heures de prière</span>
             </div>
-          </div>
-        </div>
-        <div class="donate-amounts">
-          <p class="donate-amounts__title">Choisissez un montant</p>
-          <div class="amount-grid">
-            <button class="amount-btn" data-amount="25">25 $</button>
-            <button class="amount-btn" data-amount="50">50 $</button>
-            <button class="amount-btn" data-amount="100">100 $</button>
-            <button class="amount-btn" data-amount="200">200 $</button>
-            <button class="amount-btn amount-btn--custom">Autre montant</button>
           </div>
         </div>
       </div>
@@ -291,8 +303,18 @@
           </div>
         </div>
         <div class="contact-form-wrapper">
-          <form class="contact-form" id="contactForm">
+          <!--
+            FORMSPREE : Remplacez "VOTRE-FORMSPREE-ID" par votre ID obtenu sur formspree.io
+            Exemple : action="https://formspree.io/f/xpwzjkrb"
+            Voir instructions dans le README.md du projet.
+          -->
+          <form class="contact-form" id="contactForm"
+                action="https://formspree.io/f/VOTRE-FORMSPREE-ID"
+                method="POST">
             <h3>Envoyez-nous un message</h3>
+            <!-- Champ caché : redirige les emails selon le sujet -->
+            <input type="hidden" name="_subject" id="formSubjectHidden" value="Message du site CCML" />
+            <input type="hidden" name="_language" value="fr" />
             <div class="form-group">
               <label for="name">Nom complet</label>
               <input type="text" id="name" name="name" placeholder="Votre nom" required />
@@ -302,22 +324,32 @@
               <input type="email" id="email" name="email" placeholder="votre@email.com" required />
             </div>
             <div class="form-group">
+              <label for="phone">Téléphone (optionnel)</label>
+              <input type="tel" id="phone" name="phone" placeholder="(514) 000-0000" />
+            </div>
+            <div class="form-group">
               <label for="subject">Sujet</label>
-              <select id="subject" name="subject">
+              <select id="subject" name="subject" required>
                 <option value="">Sélectionnez un sujet</option>
-                <option value="priere">Horaires de prière</option>
-                <option value="programmes">Programmes &amp; cours</option>
-                <option value="nikah">Cérémonie de mariage</option>
-                <option value="janaza">Service funéraire</option>
-                <option value="don">Don &amp; soutien</option>
-                <option value="autre">Autre</option>
+                <option value="Horaires de prière">Horaires de prière</option>
+                <option value="Programmes &amp; cours">Programmes &amp; cours</option>
+                <option value="École du Coran / Arabe">École du Coran / Arabe</option>
+                <option value="Cérémonie de mariage (Nikah)">Cérémonie de mariage (Nikah)</option>
+                <option value="Service funéraire (Janaza)">Service funéraire (Janaza)</option>
+                <option value="Don &amp; soutien financier">Don &amp; soutien financier</option>
+                <option value="Location de salle">Location de salle</option>
+                <option value="Bénévolat">Bénévolat</option>
+                <option value="Autre">Autre</option>
               </select>
             </div>
             <div class="form-group">
               <label for="message">Message</label>
               <textarea id="message" name="message" rows="4" placeholder="Votre message…" required></textarea>
             </div>
-            <button type="submit" class="btn btn--primary btn--full">Envoyer le message</button>
+            <button type="submit" class="btn btn--primary btn--full" id="submitBtn">
+              Envoyer le message
+            </button>
+            <p class="form-notice" id="formNotice"></p>
           </form>
         </div>
       </div>

@@ -230,34 +230,74 @@ document.getElementById('nav').querySelectorAll('.nav__link').forEach(l => {
   l.addEventListener('click', () => document.getElementById('nav').classList.remove('open'));
 });
 
-// ── DONATION AMOUNTS ──────────────────────────────────────────────────────────
+// ── ZEFFY FALLBACK ────────────────────────────────────────────────────────────
+// If Zeffy ID is still the placeholder, show the fallback card instead
 
-document.querySelectorAll('.amount-btn:not(.amount-btn--custom)').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('selected'));
-    btn.classList.add('selected');
+(function checkZeffy() {
+  const frame = document.getElementById('zeffyFrame');
+  const fallback = document.getElementById('zeffyFallback');
+  if (!frame || !fallback) return;
+  if (frame.src.includes('VOTRE-ZEFFY-ID')) {
+    frame.style.display = 'none';
+    fallback.classList.add('visible');
+  }
+})();
+
+// ── CONTACT FORM (Formspree AJAX) ────────────────────────────────────────────
+
+const contactForm = document.getElementById('contactForm');
+if (contactForm) {
+  // Update hidden subject field dynamically
+  const subjectSelect = document.getElementById('subject');
+  subjectSelect?.addEventListener('change', () => {
+    const hidden = document.getElementById('formSubjectHidden');
+    if (hidden && subjectSelect.value) {
+      hidden.value = `[CCML] ${subjectSelect.value}`;
+    }
   });
-});
-document.querySelector('.amount-btn--custom')?.addEventListener('click', () => {
-  const amt = prompt('Entrez le montant en dollars (ex: 75):');
-  if (amt && !isNaN(amt)) alert(`Merci pour votre don de ${amt} $! Veuillez procéder au paiement via Interac à dons@ccmlongueuil.ca`);
-});
 
-// ── CONTACT FORM ──────────────────────────────────────────────────────────────
+  contactForm.addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn   = document.getElementById('submitBtn');
+    const notice = document.getElementById('formNotice');
+    const data  = new FormData(contactForm);
 
-document.getElementById('contactForm')?.addEventListener('submit', e => {
-  e.preventDefault();
-  const btn = e.target.querySelector('button[type=submit]');
-  btn.textContent = 'Message envoyé ✓';
-  btn.style.background = 'var(--green-700)';
-  btn.disabled = true;
-  setTimeout(() => {
-    btn.textContent = 'Envoyer le message';
-    btn.style.background = '';
-    btn.disabled = false;
-    e.target.reset();
-  }, 4000);
-});
+    // If Formspree not yet configured, show a friendly error
+    const action = contactForm.action;
+    if (action.includes('VOTRE-FORMSPREE-ID')) {
+      notice.className = 'form-notice error';
+      notice.textContent = 'Le formulaire n\'est pas encore configuré. Contactez-nous directement par courriel.';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Envoi en cours…';
+    notice.textContent = '';
+    notice.className = 'form-notice';
+
+    try {
+      const res = await fetch(action, {
+        method: 'POST',
+        body: data,
+        headers: { Accept: 'application/json' },
+      });
+      if (res.ok) {
+        notice.className = 'form-notice success';
+        notice.textContent = 'Message envoyé! Nous vous répondrons dans les plus brefs délais. Jazakum Allahu khayran.';
+        contactForm.reset();
+      } else {
+        const json = await res.json();
+        throw new Error(json.errors?.map(e => e.message).join(', ') || 'Erreur serveur');
+      }
+    } catch (err) {
+      notice.className = 'form-notice error';
+      notice.textContent = `Erreur d'envoi. Veuillez réessayer ou nous écrire directement à info@ccmlongueuil.ca`;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Envoyer le message';
+    }
+  });
+}
 
 // ── FOOTER YEAR ───────────────────────────────────────────────────────────────
 
